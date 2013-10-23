@@ -1,0 +1,697 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+    <link href="../../Content/jquery-easyui/themes/icon.css" rel="stylesheet" />
+    <link href="../../Content/jquery-easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../../Content/Site.css" rel="stylesheet" />
+    <script src="../../Content/utility.js"></script>
+    <script src="../../Content/jquery-easyui/jquery.min.js"></script>
+    <script src="../../Content/jquery-easyui/jquery.easyui.min.js"></script>
+    <script src="../../Content/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="../../Content/jquery-easyui/datapattern2.js"></script>
+
+    <script type="text/javascript">
+        var gridheight = document.documentElement.clientHeight - 100;
+        $(function () {
+            
+            //初始化弹出窗体
+            initTable();
+            
+            //注册查询按钮事件
+            SearchSupplierInfo();
+
+            //注册新增弹出框的保存按钮事件
+            BindRegistButtonClickEvent();
+
+            //注册新增弹出框的保存并继续按钮事件
+            BindRegistAndContinueButtonClickEvent();
+
+            //注册更新弹出框的保存按钮事件
+            BindUpdateButtonClickEvent();
+
+            //新增保存的时候只能添加一个用户名，进行异步判断
+            CheckSupplierInfoIsTrue();
+
+        });
+
+        //初始化表格 
+        function initTable(queryData) {
+            $('#Supplier').datagrid({
+                //title: 'Supplier',
+                //iconCls: 'icon-save',
+                height: gridheight,
+                nowrap: true,
+                autoRowHeight: false,
+                striped: true,
+                collapsible: true,
+                url: '/Supplier/GetAllSupplier',
+                sortName: 'SupplierID',
+                sortOrder: 'asc',
+                border: true,
+                remoteSort: true,
+                idField: 'SupplierID',
+                loadMsg: '请稍等...',
+                pageSize: @GXP.Common.ConstUtils.CONST_PAGE_SIZE,
+                pagination: true,
+                rownumbers: true,
+                fitColumns: false,
+                queryParams: queryData,
+                columns: [[
+                    { field: 'ck', checkbox: true },
+					{ field: 'SupplierID', title: '供应商ID', width: 100, sortable: true }, 
+					{ field: 'SupplierCode', title: '供应商代码', width: 100, sortable: true }, 
+					{ field: 'SupplierName', title: '供应商名称', width: 100, sortable: true }, 
+					{ field: 'LoginPwd', title: '登录密码', width: 100, sortable: true }, 
+					{ field: 'Email', title: 'Email', width: 100, sortable: true }, 
+					{ field: 'ContactAddress', title: '联系地址', width: 100, sortable: true }, 
+					{ field: 'Contact', title: '联系人', width: 100, sortable: true }, 
+					{ field: 'Region', title: '区域', width: 100, sortable: true }, 
+					{ field: 'Stage', title: 'Stage', width: 100, sortable: true }, 
+					{ field: 'PostCode', title: '邮编', width: 100, sortable: true }, 
+					{ field: 'ContactPhone', title: '联系人电话', width: 100, sortable: true }, 
+					{ field: 'MobilePhone', title: '手机', width: 100, sortable: true }, 
+					{ field: 'QQ', title: 'QQ', width: 100, sortable: true }, 
+					{ field: 'Msn', title: 'Msn', width: 100, sortable: true }, 
+					{ field: 'Fax', title: '传真', width: 100, sortable: true }, 
+					{ field: 'WebUrl', title: 'Web地址', width: 100, sortable: true }, 
+					{ field: 'Logo', title: 'Logo', width: 100, sortable: true }, 
+					{ field: 'CompanyIntro', title: '公司介绍', width: 100, sortable: true }, 
+					{ field: 'CompanyCulture', title: '公司文化', width: 100, sortable: true }, 
+					{ field: 'ArtificialPerson', title: '紧急联系人', width: 100, sortable: true }, 
+					{ field: 'Remark', title: '备注', width: 100, sortable: true }, 
+					{ field: 'IsActive', title: '是否启用', width: 100, sortable: true }, 
+					{ field: 'CretaedBy', title: '创建人', width: 100, sortable: true }, 
+					{ field: 'CreatedDate', title: '创建日期', width: 100, sortable: true }, 
+					{ field: 'UpdatedBy', title: '更新人', width: 100, sortable: true }, 
+					{ field: 'UpdatedDate', title: '更新日期', width: 100, sortable: true } 
+                ]],                
+
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        //实现弹出添加用户信息的层
+                        ShowCreateSupplierDialog();
+                    }
+                }, '-', {
+                    id: 'btnEdit',
+                    text: '修改',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        //实现弹出修改用户信息的层
+                        ShowEditSupplierDialog();
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        //确认只删除一条用户信息
+                        DeleteSupplierInfoByClick();
+                    }
+                }
+                ]
+            });
+        }
+
+        //弹出添加用户的对话框
+        function ShowCreateSupplierDialog() {
+            //实现弹出添加用户信息的层
+            $('#EditSupplierDialog').dialog('open').dialog('setTitle', '新增用户信息');
+            //$("#UserCode").css("background-color", "");
+            //$("#UserCode").removeAttr("readonly");
+            //添加完成后清空文本框的值
+            ClearTextBox();
+        }
+
+        //弹出修改用户的对话框
+        function ShowEditSupplierDialog() {
+            var UpdateSupplierInfoID = $("#Supplier").datagrid("getSelections");
+            if (UpdateSupplierInfoID.length == 1) {
+                $("#EditSupplierDialog").dialog("open").dialog("setTitle", "修改用户信息");
+                //绑定显示修改的详细信息的内容
+                BingUpdateDetailsShowTextBox();
+            }
+            else {
+                $.messager.alert("提示", "每次只能修改一行数据，你已经选择了<font color='red' size='3'>" + UpdateSupplierInfoID.length + "</font>行");
+            }
+        }
+
+        //实现多选删除信息
+        function DeleteSupplierInfoByClick() {
+            //获取到用户选定的某一列的ID号
+            var deleteID = $("#Supplier").datagrid("getSelections");
+            //判断用户选择了多少条数据
+            //异步将删除的ID发送到后台，后台删除之后，返回前台OK，前台刷新表格
+            if (deleteID.length >= 1) {
+                var ids = "";   //1,2,3,4
+                for (var i = 0; i < deleteID.length; i++) {
+                    ids += deleteID[i].SupplierID + ",";
+                }
+                //去掉最后的一个,
+                ids = ids.substring(0, ids.length - 1);
+
+                //遍历出被删除用户的信息
+                var tmpList = "";
+                for (var i = 0; i < deleteID.length; i++) {
+                    tmpList += deleteID[i].SupplierID + ",";
+                }
+                tmpList = tmpList.substring(0, tmpList.length - 1);
+                //发送异步请求删除数据
+                $.messager.confirm("删除信息", "确认删除<font color='Red' size='3'>" + tmpList + "</font>吗？", function (DeleteSupplierInfo) {
+                    if (DeleteSupplierInfo) {
+                        $.post("/Supplier/Delete", { deleteID: ids }, function (data) {
+                            if (data == "OK") {
+                                $.messager.alert("提示", "删除成功");
+                                $("#Supplier").datagrid("reload");
+                                $("#Supplier").datagrid("clearSelections");
+                            }
+                            else {
+                                $.messager.alert("提示", "删除失败:" + data);
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                $.messager.alert("提示", "请选择您要删除的数据");
+            }
+        }
+        
+        //注册新增弹出框的保存按钮事件
+        function BindRegistButtonClickEvent() {
+            $("#btnSave").click(function () {
+                //验证所有的文本框是否通过用户的验证
+                var valid = $('#EditSupplierInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postdata = {                    
+                    SupplierID: $("#SupplierID").val(),
+                    SupplierCode: $("#SupplierCode").val(),
+                    SupplierName: $("#SupplierName").val(),
+                    LoginPwd: $("#LoginPwd").val(),
+                    Email: $("#Email").val(),
+                    ContactAddress: $("#ContactAddress").val(),
+                    Contact: $("#Contact").val(),
+                    Region: $("#Region").val(),
+                    Stage: $("#Stage").val(),
+                    PostCode: $("#PostCode").val(),
+                    ContactPhone: $("#ContactPhone").val(),
+                    MobilePhone: $("#MobilePhone").val(),
+                    QQ: $("#QQ").val(),
+                    Msn: $("#Msn").val(),
+                    Fax: $("#Fax").val(),
+                    WebUrl: $("#WebUrl").val(),
+                    Logo: $("#Logo").val(),
+                    CompanyIntro: $("#CompanyIntro").val(),
+                    CompanyCulture: $("#CompanyCulture").val(),
+                    ArtificialPerson: $("#ArtificialPerson").val(),
+                    Remark: $("#Remark").val(),
+                    IsActive: $("#IsActive").val(),
+                    CretaedBy: $("#CretaedBy").val(),
+                    CreatedDate: $("#CreatedDate").val(),
+                    UpdatedBy: $("#UpdatedBy").val(),
+                    UpdatedDate: $("#UpdatedDate").val()
+                };
+                //发送异步请求到后台保存用户数据
+                $.post("/Supplier/Edit", postdata, function (data) {
+                    if (data == "OK") {
+                        //添加成功，(1)关闭对话框，刷新表格
+                        alert("添加成功");
+                        $('#EditSupplierDialog').dialog('close');
+                        $("#Supplier").datagrid("reload");
+                    }
+                    else {
+                        alert("添加失败，请检查"+data);
+                    }
+                });
+            });
+        }
+
+        //注册新增弹出框的保存按钮事件
+        function BindRegistAndContinueButtonClickEvent() {
+            $("#btnSaveAndCon").click(function () {
+                //验证所有的文本框是否通过用户的验证d
+                var valid = $('#EditSupplierInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postdata = {
+                    SupplierID: $("#SupplierID").val(),
+                    SupplierCode: $("#SupplierCode").val(),
+                    SupplierName: $("#SupplierName").val(),
+                    LoginPwd: $("#LoginPwd").val(),
+                    Email: $("#Email").val(),
+                    ContactAddress: $("#ContactAddress").val(),
+                    Contact: $("#Contact").val(),
+                    Region: $("#Region").val(),
+                    Stage: $("#Stage").val(),
+                    PostCode: $("#PostCode").val(),
+                    ContactPhone: $("#ContactPhone").val(),
+                    MobilePhone: $("#MobilePhone").val(),
+                    QQ: $("#QQ").val(),
+                    Msn: $("#Msn").val(),
+                    Fax: $("#Fax").val(),
+                    WebUrl: $("#WebUrl").val(),
+                    Logo: $("#Logo").val(),
+                    CompanyIntro: $("#CompanyIntro").val(),
+                    CompanyCulture: $("#CompanyCulture").val(),
+                    ArtificialPerson: $("#ArtificialPerson").val(),
+                    Remark: $("#Remark").val(),
+                    IsActive: $("#IsActive").val(),
+                    CretaedBy: $("#CretaedBy").val(),
+                    CreatedDate: $("#CreatedDate").val(),
+                    UpdatedBy: $("#UpdatedBy").val(),
+                    UpdatedDate: $("#UpdatedDate").val()
+                };
+                //发送异步请求到后台保存用户数据
+                $.post("/Supplier/Edit", postdata, function (data) {
+                    if (data == "OK") {
+                        //添加成功，(1)关闭对话框，刷新表格
+                        //alert("添加成功");
+                        //$('#EditUserDialog').dialog('close');
+                        //$("#Users").datagrid("reload");
+                        ClearTextBox();
+                        //$("#UserID").focus();
+                    }
+                    else {
+                        alert("添加失败，请检查!"+data);
+                    }
+                });
+            });
+        }
+
+        //修改用户的信息
+        function BindUpdateButtonClickEvent() {
+            $("#btnUpdate").click(function () {
+                //首先判断前台的验证是否通过
+                var valid = $('#EditSupplierInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postData = {
+                    SupplierID: $("#SupplierID").val(),
+                    SupplierCode: $("#SupplierCode").val(),
+                    SupplierName: $("#SupplierName").val(),
+                    LoginPwd: $("#LoginPwd").val(),
+                    Email: $("#Email").val(),
+                    ContactAddress: $("#ContactAddress").val(),
+                    Contact: $("#Contact").val(),
+                    Region: $("#Region").val(),
+                    Stage: $("#Stage").val(),
+                    PostCode: $("#PostCode").val(),
+                    ContactPhone: $("#ContactPhone").val(),
+                    MobilePhone: $("#MobilePhone").val(),
+                    QQ: $("#QQ").val(),
+                    Msn: $("#Msn").val(),
+                    Fax: $("#Fax").val(),
+                    WebUrl: $("#WebUrl").val(),
+                    Logo: $("#Logo").val(),
+                    CompanyIntro: $("#CompanyIntro").val(),
+                    CompanyCulture: $("#CompanyCulture").val(),
+                    ArtificialPerson: $("#ArtificialPerson").val(),
+                    Remark: $("#Remark").val(),
+                    IsActive: $("#IsActive").val(),
+                    CretaedBy: $("#CretaedBy").val(),
+                    CreatedDate: $("#CreatedDate").val(),
+                    UpdatedBy: $("#UpdatedBy").val(),
+                    UpdatedDate: $("#UpdatedDate").val()
+                };
+
+                //使用异步实现修改用户信息
+                $.post("/Supplier/Update", postData, function (data) {
+                    if (data == "OK") {
+                        $("#Edit'Supplier'Dialog").dialog('close');
+                        $("#Supplier").datagrid('reload');
+                    }
+                    else {
+                        alert("修改失败，请检查!"+data);
+                    }
+                });
+            });
+        }
+
+        //绑定修改用户的信息显示在用户的TextBox文本框中
+        function BingUpdateDetailsShowTextBox() {
+            //首先获取选中的用户的ID
+            var checkID = $("#Supplier").datagrid("getSelections")[0].SupplierID;
+            //使用异步的getJSON请求绑定前台传递过来的数据
+            $.getJSON("/Supplier/GetSupplierInfoByID", { ID: checkID }, function (data) {                
+                $("#SupplierID").val(data.SupplierID);
+                $("#SupplierCode").val(data.SupplierCode);
+                $("#SupplierName").val(data.SupplierName);
+                $("#LoginPwd").val(data.LoginPwd);
+                $("#Email").val(data.Email);
+                $("#ContactAddress").val(data.ContactAddress);
+                $("#Contact").val(data.Contact);
+                $("#Region").val(data.Region);
+                $("#Stage").val(data.Stage);
+                $("#PostCode").val(data.PostCode);
+                $("#ContactPhone").val(data.ContactPhone);
+                $("#MobilePhone").val(data.MobilePhone);
+                $("#QQ").val(data.QQ);
+                $("#Msn").val(data.Msn);
+                $("#Fax").val(data.Fax);
+                $("#WebUrl").val(data.WebUrl);
+                $("#Logo").val(data.Logo);
+                $("#CompanyIntro").val(data.CompanyIntro);
+                $("#CompanyCulture").val(data.CompanyCulture);
+                $("#ArtificialPerson").val(data.ArtificialPerson);
+                $("#Remark").val(data.Remark);
+                $("#IsActive").val(data.IsActive);
+                $("#CretaedBy").val(data.CretaedBy);
+                $("#CreatedDate").val(data.CreatedDate);
+                $("#UpdatedBy").val(data.UpdatedBy);
+                $("#UpdatedDate").val(data.UpdatedDate);
+            });
+        }
+
+        //当添加或者修改完成后清空文本框中的值
+        function ClearTextBox() {                
+            $("#SupplierID").val("");
+            $("#SupplierCode").val("");
+            $("#SupplierName").val("");
+            $("#LoginPwd").val("");
+            $("#Email").val("");
+            $("#ContactAddress").val("");
+            $("#Contact").val("");
+            $("#Region").val("");
+            $("#Stage").val("");
+            $("#PostCode").val("");
+            $("#ContactPhone").val("");
+            $("#MobilePhone").val("");
+            $("#QQ").val("");
+            $("#Msn").val("");
+            $("#Fax").val("");
+            $("#WebUrl").val("");
+            $("#Logo").val("");
+            $("#CompanyIntro").val("");
+            $("#CompanyCulture").val("");
+            $("#ArtificialPerson").val("");
+            $("#Remark").val("");
+            $("#IsActive").val("");
+            $("#CretaedBy").val("");
+            $("#CreatedDate").val("");
+            $("#UpdatedBy").val("");
+            $("#UpdatedDate").val("");
+        }
+
+        //检查用户名是否存在
+        function CheckSupplierInfoIsTrue() {
+            $("#UserCode").blur(function () {
+                if (typeof ($("#UserCode").attr("readonly")) == "undefined") {
+                    //获取输入到控件的值
+                    var UserCode = $("#UserCode").val();
+                    //使用异步验证
+                    $.post("/Supplier/CheckUnique", { code: UserCode }, function (data) {
+                        if (data == "NO") {
+                            alert("用户名已经存在，请您检查");
+                            $("#UserCode").val("");
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+
+        //搜索数据信息
+        function SearchSupplierInfo() {
+            $("#btnSerach").click(function () {
+                var queryData = { 
+                    Q_SupplierID: $("#Q_SupplierID").val(), 
+                    Q_SupplierCode: $("#Q_SupplierCode").val(), 
+                    Q_SupplierName: $("#Q_SupplierName").val(), 
+                    Q_LoginPwd: $("#Q_LoginPwd").val(), 
+                    Q_Email: $("#Q_Email").val(), 
+                    Q_ContactAddress: $("#Q_ContactAddress").val(), 
+                    Q_Contact: $("#Q_Contact").val(), 
+                    Q_Region: $("#Q_Region").val(), 
+                    Q_Stage: $("#Q_Stage").val(), 
+                    Q_PostCode: $("#Q_PostCode").val(), 
+                    Q_ContactPhone: $("#Q_ContactPhone").val(), 
+                    Q_MobilePhone: $("#Q_MobilePhone").val(), 
+                    Q_QQ: $("#Q_QQ").val(), 
+                    Q_Msn: $("#Q_Msn").val(), 
+                    Q_Fax: $("#Q_Fax").val(), 
+                    Q_WebUrl: $("#Q_WebUrl").val(), 
+                    Q_Logo: $("#Q_Logo").val(), 
+                    Q_CompanyIntro: $("#Q_CompanyIntro").val(), 
+                    Q_CompanyCulture: $("#Q_CompanyCulture").val(), 
+                    Q_ArtificialPerson: $("#Q_ArtificialPerson").val(), 
+                    Q_Remark: $("#Q_Remark").val(), 
+                    Q_IsActive: $("#Q_IsActive").val(), 
+                    Q_CretaedBy: $("#Q_CretaedBy").val(), 
+                    Q_CreatedDate: $("#Q_CreatedDate").val(), 
+                    Q_UpdatedBy: $("#Q_UpdatedBy").val(), 
+                    Q_UpdatedDate: $("#Q_UpdatedDate").val()
+                };
+                initTable(queryData);
+                return false;  
+            });
+        }
+    </script>
+</head>
+<body>
+    <fieldset>
+        <legend>查询</legend>
+        <div>
+            <label for="Q_SupplierID">供应商ID：</label>
+            <input type="text" id="Q_SupplierID" name="Q_SupplierID" />&nbsp;&nbsp; 
+            <label for="Q_SupplierCode">供应商代码：</label>
+            <input type="text" id="Q_SupplierCode" name="Q_SupplierCode" />&nbsp;&nbsp; 
+            <label for="Q_SupplierName">供应商名称：</label>
+            <input type="text" id="Q_SupplierName" name="Q_SupplierName" />&nbsp;&nbsp; 
+            <label for="Q_LoginPwd">登录密码：</label>
+            <input type="text" id="Q_LoginPwd" name="Q_LoginPwd" />&nbsp;&nbsp; 
+            <label for="Q_Email">Email：</label>
+            <input type="text" id="Q_Email" name="Q_Email" />&nbsp;&nbsp; 
+            <label for="Q_ContactAddress">联系地址：</label>
+            <input type="text" id="Q_ContactAddress" name="Q_ContactAddress" />&nbsp;&nbsp; 
+            <label for="Q_Contact">联系人：</label>
+            <input type="text" id="Q_Contact" name="Q_Contact" />&nbsp;&nbsp; 
+            <label for="Q_Region">区域：</label>
+            <input type="text" id="Q_Region" name="Q_Region" />&nbsp;&nbsp; 
+            <label for="Q_Stage">Stage：</label>
+            <input type="text" id="Q_Stage" name="Q_Stage" />&nbsp;&nbsp; 
+            <label for="Q_PostCode">邮编：</label>
+            <input type="text" id="Q_PostCode" name="Q_PostCode" />&nbsp;&nbsp; 
+            <label for="Q_ContactPhone">联系人电话：</label>
+            <input type="text" id="Q_ContactPhone" name="Q_ContactPhone" />&nbsp;&nbsp; 
+            <label for="Q_MobilePhone">手机：</label>
+            <input type="text" id="Q_MobilePhone" name="Q_MobilePhone" />&nbsp;&nbsp; 
+            <label for="Q_QQ">QQ：</label>
+            <input type="text" id="Q_QQ" name="Q_QQ" />&nbsp;&nbsp; 
+            <label for="Q_Msn">Msn：</label>
+            <input type="text" id="Q_Msn" name="Q_Msn" />&nbsp;&nbsp; 
+            <label for="Q_Fax">传真：</label>
+            <input type="text" id="Q_Fax" name="Q_Fax" />&nbsp;&nbsp; 
+            <label for="Q_WebUrl">Web地址：</label>
+            <input type="text" id="Q_WebUrl" name="Q_WebUrl" />&nbsp;&nbsp; 
+            <label for="Q_Logo">Logo：</label>
+            <input type="text" id="Q_Logo" name="Q_Logo" />&nbsp;&nbsp; 
+            <label for="Q_CompanyIntro">公司介绍：</label>
+            <input type="text" id="Q_CompanyIntro" name="Q_CompanyIntro" />&nbsp;&nbsp; 
+            <label for="Q_CompanyCulture">公司文化：</label>
+            <input type="text" id="Q_CompanyCulture" name="Q_CompanyCulture" />&nbsp;&nbsp; 
+            <label for="Q_ArtificialPerson">紧急联系人：</label>
+            <input type="text" id="Q_ArtificialPerson" name="Q_ArtificialPerson" />&nbsp;&nbsp; 
+            <label for="Q_Remark">备注：</label>
+            <input type="text" id="Q_Remark" name="Q_Remark" />&nbsp;&nbsp; 
+            <label for="Q_IsActive">是否启用：</label>
+            <input type="text" id="Q_IsActive" name="Q_IsActive" />&nbsp;&nbsp; 
+            <label for="Q_CretaedBy">创建人：</label>
+            <input type="text" id="Q_CretaedBy" name="Q_CretaedBy" />&nbsp;&nbsp; 
+            <label for="Q_CreatedDate">创建日期：</label>
+            <input type="text" id="Q_CreatedDate" name="Q_CreatedDate" />&nbsp;&nbsp; 
+            <label for="Q_UpdatedBy">更新人：</label>
+            <input type="text" id="Q_UpdatedBy" name="Q_UpdatedBy" />&nbsp;&nbsp; 
+            <label for="Q_UpdatedDate">更新日期：</label>
+            <input type="text" id="Q_UpdatedDate" name="Q_UpdatedDate" />
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSerach" name="btnSerach">查询</a>
+        </div>
+    </fieldset>
+    <div>
+        <table id="Supplier"></table>
+    </div>
+    <div id="EditSupplierDialog" class="easyui-dialog" style="width: 500px; height: 500px; padding: 10px 20px"
+        closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="EditSupplierInfo" method="post" novalidate="novalidate">
+            <table id="tableEdit">
+                <tr>
+                    <th colspan="2">信息</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="SupplierID">供应商ID：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="SupplierID" name="SupplierID" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="SupplierCode">供应商代码：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="SupplierCode" name="SupplierCode" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="SupplierName">供应商名称：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="SupplierName" name="SupplierName" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="LoginPwd">登录密码：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="LoginPwd" name="LoginPwd" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Email">Email：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Email" name="Email" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ContactAddress">联系地址：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="ContactAddress" name="ContactAddress" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Contact">联系人：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Contact" name="Contact" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Region">区域：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Region" name="Region" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Stage">Stage：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Stage" name="Stage" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="PostCode">邮编：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="PostCode" name="PostCode" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ContactPhone">联系人电话：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="ContactPhone" name="ContactPhone" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="MobilePhone">手机：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="MobilePhone" name="MobilePhone" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="QQ">QQ：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="QQ" name="QQ" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Msn">Msn：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Msn" name="Msn" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Fax">传真：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Fax" name="Fax" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="WebUrl">WebUrl：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="WebUrl" name="WebUrl" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Logo">Logo：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Logo" name="Logo" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CompanyIntro">CompanyIntro：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CompanyIntro" name="CompanyIntro" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CompanyCulture">CompanyCulture：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CompanyCulture" name="CompanyCulture" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ArtificialPerson">ArtificialPerson：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="ArtificialPerson" name="ArtificialPerson" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Remark">Remark：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Remark" name="Remark" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="IsActive">IsActive：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="IsActive" name="IsActive" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CretaedBy">CretaedBy：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CretaedBy" name="CretaedBy" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CreatedDate">CreatedDate：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CreatedDate" name="CreatedDate" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="UpdatedBy">UpdatedBy：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="UpdatedBy" name="UpdatedBy" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="UpdatedDate">UpdatedDate：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="UpdatedDate" name="UpdatedDate" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center; padding-top: 10px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnSave" iconcls="icon-ok">保存</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#EditSupplierDialog').dialog('close')">关闭</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+
+

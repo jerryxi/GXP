@@ -1,0 +1,52 @@
+
+2013-08-29 15:58:15,404 [8] ERROR - 
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 191
+
+2013-08-29 15:58:24,885 [12] ERROR - 
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 191
+
+2013-08-29 15:59:24,984 [11] ERROR - 
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 191
+
+2013-08-29 15:59:31,613 [17] ERROR - 
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 191
+
+2013-08-29 16:00:22,113 [8] ERROR - 
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 191
+
+2013-08-30 14:32:43,409 [13] ERROR - 
+System.ArgumentNullException: 值不能为 null。
+参数名: String
+   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   在 System.Int32.Parse(String s)
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID, String functionID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 200
+
+2013-08-30 14:34:19,024 [15] ERROR - 
+System.ArgumentNullException: 值不能为 null。
+参数名: String
+   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   在 System.Int32.Parse(String s)
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID, String functionID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 200
+
+2013-08-30 14:57:02,586 [9] ERROR - 
+System.ArgumentNullException: 值不能为 null。
+参数名: String
+   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   在 System.Int32.Parse(String s)
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String roleID, String functionID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 200
+
+2013-08-30 15:32:45,064 [13] ERROR - 
+System.ArgumentNullException: 值不能为 null。
+参数名: String
+   在 System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   在 System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   在 System.Int32.Parse(String s)
+   在 GXP.Controllers.RolefunctionController.SetRoleFunction(String functionID) 位置 e:\Projects\GXPlatform\GXP\Source\GXP\GXP\Controllers\RolefunctionController.cs:行号 201

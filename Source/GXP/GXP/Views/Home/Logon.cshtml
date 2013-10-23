@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "Logon";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台登录</title>
+    <link href="../../Content/jquery-easyui/themes/icon.css" rel="stylesheet" />
+    <link href="../../Content/jquery-easyui/themes/metro-blue/easyui.css" rel="stylesheet" />
+    <script src="../../Content/jquery-easyui/jquery.min.js"></script>
+    <script src="../../Content/jquery-easyui/jquery.easyui.min.js"></script>
+    <script src="../../Content/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+
+        if (window.parent.window != window) {
+            window.top.location.href = "/Login/Index";
+        }
+
+        $(function () {
+            //实现用户的登录信息
+            LoginUserInfo();
+        });
+
+        $(document).keyup(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                    var validate = $("#ff").form("validate");
+                    if (validate == false) {
+                        return false;
+                    }
+                    var postData = {
+                        UName: $("#UName").val(),
+                        Pwd: $("#Pwd").val(),
+                        Code: $("#Code").val()
+                    };
+
+                    //异步实现登录功能
+                    $.post("/Home/CheckUserLogin", postData, function (data) {
+                        if (data == "OK") {
+                            window.location.href = "/Home/Index";
+                        }
+                        else {
+                            alert(data);
+                            window.location.href = "/Home/Logon/";
+                        }
+                    });
+                }
+            }
+        );
+
+        //异步实现用户的登录
+        function LoginUserInfo() {
+            $("#btnLogin").click(function () {
+                var validate = $("#ff").form("validate");
+                if (validate == false) {
+                    return false;
+                }
+                if ($("#UName").val() == "")
+                {
+                    centerRight("提示信息", "请输入用户名");
+                    $("#UName").focus();
+                    return;
+                }
+                if ($("#Pwd").val() == "") {
+                    centerRight("提示信息", "请输入密码");
+                    $("#Pwd").focus();
+                    return;
+                }
+                var postData = {
+                    UName: $("#UName").val(),
+                    Pwd: $("#Pwd").val(),
+                    Code: $("#Code").val()
+                };
+
+                //异步实现登录功能
+                $.post("/Home/CheckUserLogin", postData, function (data) {
+                    if (data == "OK") {
+                        window.location.href = "/Home/Index";
+                    }
+                    else {
+                        alert(data);
+                        window.location.href = "/Home/Logon/";
+                    }
+                });
+            });
+        }
+
+        function centerRight(t,m) {
+            $.messager.show({
+                title: t,
+                msg: m,
+                showType: 'fade',
+                style: {
+                    left: '',
+                    right: 0,
+                    bottom: ''
+                }
+            });
+        }
+
+        //单击重新改变验证码
+        function ClickRemoveChangeCode() {
+            var code = $("#imgCode").attr("src");
+            $("#imgCode").attr("src", code + "1");
+        }
+    </script>
+</head>
+<body>
+    <div id="LoginDialog" class="easyui-dialog" style="width:400px;height:230px;padding:10px 20px" modal="true" closable="false" title="供销平台用户登录" buttons="#dlg-buttons" align="center">
+        <form id="ff" method="post" novalidate="novalidate">
+            <table id="tblAdd">
+                <tr>
+                    <td><label for="UName">用户名：</label></td>
+                    <td><input class="easyui-textbox" type="text" style="width:150px" id="UName" name="UName" value="@ViewBag.UName" data-options="required:true,validType:'length[1,32]'" /></td><td>
+                </tr>
+                <tr>
+                    <td><label for="Pwd">密&nbsp;码：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="password" style="width:150px"  id="Pwd" name="Pwd" data-options="required:true,validType:'length[1,32]'" /></td>
+                </tr>
+                <tr>
+                    <td><label for="Code">验证码：</label></td>
+                    <td><input class="easyui-textbox" type="text" style="width:150px" id="Code" name="Code"  data-options="required:true,validType:'length[1,20]'" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>验证码：</td>
+                    <td>
+                        <img src="/Home/CheckCode?ID=1" id="imgCode" alt="单击可刷新" onclick="ClickRemoveChangeCode()"  />
+                        <div style="float:right; margin-top: 5px;">
+                            <a href="javascript:void(0)" onclick="ClickRemoveChangeCode();return false;">看不清楚，换一张</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center; padding-top:10px">
+                        <a href="#" class="easyui-linkbutton" id="btnLogin" iconcls="icon-ok" >确定</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+

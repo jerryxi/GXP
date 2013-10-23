@@ -1,0 +1,170 @@
+@charset "gb2312";
+/* CSS Document */
+body{
+
+    font-size:12px;
+	font:"宋体";
+	font:#000000;
+}
+
+body{ width:100%; height:auto; background:url(../images/bg.jpg);}
+
+
+div{ line-height:180%; overflow:hidden; }
+
+
+
+.clearfloat{ clear:both; height:0px; font-size: 1px; line-height:0px;}
+.left{ float:left;}
+* {
+       outline: 0;
+       padding: 0;
+       margin: 0;
+       border: 0;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, table, th, td, embed, object {
+    padding: 0;
+    margin: 0; 
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+    fieldset, img, abbr {
+    border: 0;
+}
+address, caption, cite, code, dfn, em, 
+h1, h2, h3, h4, h5, h6, strong, th, var {
+    font-weight: normal;
+    font-style: normal;
+}
+ul {
+    list-style: none;
+}
+caption, th {
+    text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: 1.0em;
+}
+q:before, q:after {
+    content: ”;
+}
+a, ins {
+    text-decoration: none;
+}
+a:link {color:#000000;text-decoration:none;}     /* 未访问的链接 */
+a:visited {color:#000000;text-decoration:none;}  /* 已访问的链接 */
+a:hover {color:#eb010e;text-decoration:none;}    /* 当有鼠标悬停在链接上 */
+a:active {color: #000000;text-decoration:none;}   /* 被选择的链接 */
+
+
+
+/*global.css结束*/
+.head{ height:182px; width:100%; background:url(../images/headbg.jpg) repeat-x;}
+.header{ width:1199px; height:30px; margin:0 auto; line-height:30px; padding:0px 15px;color:#fff;}
+.header span{ margin-left:30px; display:inline;}
+.header a:link {color:#fff;}     /* 未访问的链接 */
+.header a:visited {color:#fff;}  /* 已访问的链接 */
+.header a:hover {color:#ffcc33;}    /* 当有鼠标悬停在链接上 */
+.header a:active {color: #fff;}   /* 被选择的链接 */
+.topnav{ float:right; display:inline; line-height:30px;}
+.topnav a{ margin-left:30px; display:block; height:30px; float:left; }
+.topnav a:hover {color:#ffcc33;background:url(../images/topnavbg.jpg) bottom center repeat-x;}    /* 当有鼠标悬停在链接上 */
+.top{ height:98px; width:1229px; margin:0 auto;}
+.logo{ float:left; display:block; width:155px; height:98px;}
+.city-info{
+			float: left;
+			margin: 30px 0 0 0px;
+			width: 90px;
+			}
+.city-info h2 a{ display:block; float:left; width:90px; line-height:38px; font-size:21px; color:#fff; font-family:"微软雅黑"; text-align:center;}
+.city-info b{ color:#ccc;  padding-left:14px;}
+.search{ width:878px; height:33px; float:right;  margin-top:40px; display:inline;}
+.sou{ width:425px; margin-right:1px; height:33px; border:0px; background:url(../images/sou.jpg) no-repeat; color:#999999;float:left; line-height:33px; padding-left:10px;}
+.ser{ width:95px; height:33px; float:left; background:url(../images/ser.jpg) no-repeat; border:0px;cursor:pointer;}
+.nav{ width:1229px; height:51px; margin:0 auto; line-height:51px;}
+.mainbav{ width:850px; height:51px; line-height:51px; font-family:"微软雅黑"; font-size:14px; font-weight:600; float:left;}
+.mainbav a{ display:block; width:94px; height:51px; float:left; text-align:center;}
+.mainbav a:link {color:#fff; background:url(../images/navbg1.jpg) top left no-repeat;}     /* 未访问的链接 */
+.mainbav a:visited {color:#fff;background:url(../images/navbg1.jpg) top left no-repeat;}  /* 已访问的链接 */
+.mainbav a:hover {color:#fecf00;background:url(../images/navbg2.jpg) top left no-repeat;}    /* 当有鼠标悬停在链接上 */
+.mainbav a:active {color: #fff;background:url(../images/navbg1.jpg) top left no-repeat;}   /* 被选择的链接 */
+.sidebar{ width:312px; height:51px; float:left; margin-left:67px;}
+.sidebar li{ float:left; margin-left:33px; display:inline;}
+.sidebar img{ margin:0px 2px;}
+.sidebar a:link {color:#fff;}     /* 未访问的链接 */
+.sidebar a:visited {color:#fff;}  /* 已访问的链接 */
+.sidebar a:hover {color:#ffcc33;}    /* 当有鼠标悬停在链接上 */
+.sidebar a:active {color: #fff;}   /* 被选择的链接 */
+
+
+
+.center{ width:1205px; height:auto; margin:0 auto; background:#ffc503; padding:0px 12px 20px 12px; min-height:500px;}
+.banner{ width:1205px; height:229px;}
+.subnav { width:1203px; height:auto; margin-bottom:3px; border:1px solid #b7982f; background:#fff; margin-top:10px;}
+.title{ border-bottom:1px solid #d4d4d4; height:35px; line-height:40px; width:1180px; padding-left:20px; margin:0 auto; background:#fefeec;}
+.title a:link {color:#3b3b3b;}     /* 未访问的链接 */
+.title a:hover {color:#ffcc33; background:#3c3c3c;}    /* 当有鼠标悬停在链接上 */
+.title a{ margin-left:12px; line-height:35px; display:inline; padding:4px;}
+.title span{ color:#eb010e;}
+.menu1{ width:1160px; height:auto; border-bottom:1px #dbdbdb dashed; margin:0 auto; padding:15px 0px 15px 0px;}
+.menu1 a{ margin:0px 20px 10px 0px;}
+.menu1 b{ font-weight:normal; font-size:10px; color:#999999; margin-left:4px;}
+.menu1 a span{ background:#FF0000; color:#fff; padding:5px;}
+.Icon{ width:60px; height:auto; float:left; display:block;}
+.Icon1{ width:1000px; height:auto; float:left; margin-left:10px;}
+.Icon1  a{  display:block; float:left;}
+.sort-bar{ height:20px; line-height:20px; width:1175px; margin:0 auto; margin-bottom:6px;}
+.sort-bar a{ color:#7b7b7b; display:block; float:left; margin:0px;  padding:2px 10px;}
+.sort-bar a:hover{ background:#dedede;}
+.sort-bar span{ background: url(../images/xiao.png) no-repeat; width:7px; height:20px; margin-left:7px; margin-top:2px; display:inline-block; float:right;}
+.sort-bar b{ background: url(../images/sp-checkbox.png) no-repeat; width:13px; height:20px; margin-right:5px; margin-top:2px; display:inline-block; float:left;}
+.products{ width:894px; height:auto; float:left; background:#d76e1a; min-height:500px}
+.products1{ width:288px; height:323px; padding-top:8px; margin:3px 0px 0px 7.5px; float:left;  position:relative;}
+.products2{ width:100%; height:305px; background:#fff; padding:5px;}
+.products2 img{ width:277px; height:188px; float:left; margin-bottom:12px; display:inline;}
+.products2 h2{ font-family:"微软雅黑"; font-size:18px;}
+.products2 span{ width:250px; height:50px; float:left; display:block; padding-left:10px; padding-top:5px;}
+.products2 p b{ color:#878787; font-weight:normal; font-size:16px;text-decoration: line-through; padding-right:85px; }
+.products2 p{ height:35px; width:277px;color:#ff0000;} 
+
+.products2 p em{ color:#ff0000; font-size:30px;font-family:"微软雅黑"; padding-right:10px;}
+.deal-mark {
+position: absolute;  top:0px; right:20px; width:auto; height:48px;
+z-index: 9;}
+.deal-mark span{ width:48px; height:48px; background:url(../images/xiao.png) no-repeat; display:block; float:left;}
+.rightcom{ height:auto; min-height:400px; width:300px; float:left; margin-left:10px; display:inline; background:#fdfdfd; padding:15px 0px;}
+.rightcom1{ width:288px; height:auto; margin:0 auto;}
+.rightcom1 h2{ color:#cc3300;font-size:18px;font-family:"微软雅黑"; padding-left:6px; background:url(../images/xiao.png) no-repeat; background-position:0px -218px; padding-bottom:8px;}
+.rightcom1 h2 b{ color:#cc6633; font-weight:normal; padding-left:20px;}
+.rightcom1a{ display:block; float:left; width:100%; background:url(../images/xiao.png) repeat-x; height:29px; background-position:0px -306px;}
+.bhb{ float:left; height:auto; padding-bottom:20px; padding-top:27px;s}
+.bhb li{ margin-bottom:20px; height:auto; width:254px; }
+.bhb li a:link {color:#595959;}     /* 未访问的链接 */
+.bhb li a:visited {color:#595959;}  /* 已访问的链接 */
+.bhb li a:hover {color:#f00;}    /* 当有鼠标悬停在链接上 */
+.bhb li a:active {color:#595959;}   /* 被选择的链接 */
+.bhb li em{ color:#bcbcbc;text-decoration: line-through; display:block; width:100%}
+.bhb li b{ color:#f00; font-size:14px;}
+.bhb li span{
+			 height:16px; width:16px; float:left; display:block; background:url(../images/xiao.png) no-repeat;
+			 text-align:center; line-height:16px; color:#fff; background-position:-66px 0px; padding-right:25px;}
+			 
+.week{ width:286px; height:131px; float:left; border:1px solid #b9b9b9; position:relative; margin-bottom:20px;}
+.week img{ width:118px; height:102px; float:left; margin:14px 5px 14px 13px; display:inline;}
+.week h3{ font-size:13px; color:#cc6600;font-family:"微软雅黑"; padding-top:10px;}
+.week b{ font-weight:normal; display:block; float:left; width:140px; color:#575757;}
+.week em{ color:#FF0000;font-size:24px;font-family:"微软雅黑";}
+.week em font{font-size:20px;}
+.more{ background:url(../images/xiao.png) 108px 150px; display:inline-block; float:right; margin-right:8px; width:40px; height:20px;}
+.hot{ width:72px; height:72px; position:absolute; top:0px; left:0px; z-index:10; background:url(../images/xiao.png) 106px -30px;}
+.tea{ width:286px; height:123px; float:left; margin-top:12px; display:inline-block;}
+
+.tea a:link img {width:284px; height:121px; border:1px solid #999999;}     /* 未访问的链接 */
+.tea a:visited img {width:284px; height:121px; border:1px solid #999999;}  /* 已访问的链接 */
+.tea a:hover img {width:276px; height:113px; border:5px solid #d76e1a;}    /* 当有鼠标悬停在链接上 */
+.tea a:active img {width:284px; height:121px; border:1px solid #999999;}   /* 被选择的链接 */
+.footer{ width:100%; height:140px; background:url(../images/footerbg.jpg) repeat-x;}
+.foot{width:1205px; height:102px; margin:0 auto; padding-top:38px; position:relative; text-align:center; color:#ffcc00;}
+.gotop{ width:159px; height:49px; position:absolute; top:3px; right:0px;  z-index:10; background:url(../images/xiao.png) 0px -250px;}

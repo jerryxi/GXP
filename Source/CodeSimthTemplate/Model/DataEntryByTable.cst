@@ -1,0 +1,294 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" ResponseEncoding="UTF-8" Src="..\CommonSqlCode.cs" Inherits="MoM.Templates.CommonSqlCode" Debug="False" Description="Template description here." %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context"  Description="The namespace to use for this class" %>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Context" Optional="false" Description="Database that the documentation should be based on." %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="DetailTable" Type="SchemaExplorer.TableSchema" Category="Context" Optional="True" Description="Table that the object is based on." %>
+<%@ Property Name="StoreProcedure" Type="SchemaExplorer.CommandSchema " Category="Context" Optional="True" Description="Table that the object is based on." %>
+<%@ Property Name="View" Type="SchemaExplorer.ViewSchema " Category="Context" Optional="True" Description="Table that the object is based on." %>
+
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+/*----------------------------------------------------------------
+//
+// Copyright (C) 2013 JerryXi 
+// 
+//
+// 文件名：<%=FormatClassName(SourceTable) %>Info
+// 文件功能描述：提供<%=FormatClassName(SourceTable) %>的数据成员
+//
+// 创建标识：<%=DevelopersName %> <%=DateTime.Now.ToShortDateString() %> 
+//
+// 修改标识：
+// 修改描述：
+// 
+//----------------------------------------------------------------*/
+using System;
+using System.Collections.Generic;
+using System.ServiceModel;
+using System.Runtime.Serialization;
+
+namespace <%= NameSpace %>
+{
+    [DataContract]
+    public class  <%=FormatClassName(SourceTable) %>Info
+    {
+		#region 数据成员
+        <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+        		
+        [DataMember]
+        public <%= GetDataType(SourceTable.Columns[i]) %> <%= GetFormatPropertyName(SourceTable.Columns[i]) %> 	{ get; set; }		
+         <% } %>
+		#endregion
+		
+		#region 无参构造函数
+        public <%=FormatClassName(SourceTable) %>Info()
+		{
+			
+		}
+		#endregion
+        
+		#region 有参构造函数
+        <% if(SourceTable.PrimaryKey.MemberColumns.Count != SourceTable.Columns.Count) { %>
+        public <%=FormatClassName(SourceTable) %>Info(
+			<%= GetConstructorParameters(SourceTable) %>
+		)
+		{
+			<%= GetAssignValue(SourceTable) %>
+		}
+		#endregion
+ <% } %>
+    }
+}
+<script runat="template">
+
+//Note :生成实体类
+//Create By : Jerry
+//Create Date : 2008-06-25
+
+public string GetDataType(ColumnSchema col)
+{
+    string str = "";
+    if(GetFormatPropertyName(col).ToUpper() != "TS")
+    {
+        return GetCSType(col);
+    }
+    else
+    {
+        return "System.Object";
+    }
+}
+
+public string FormatClassName(SchemaObjectBase schemaObject)
+	{
+		string str="";
+		str=GetClassName(schemaObject.Name);
+		str=str.ToLower();
+		string temp = "";
+		char[] array = str.ToCharArray();
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (i == 0)
+            {
+                array[0] = Convert.ToChar(array[0].ToString().ToUpper());                    
+            }
+          
+            if (array[i].ToString() == "_")
+            {
+                array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+            } 
+            temp += array[i].ToString();
+        }
+        temp = temp.Replace("_", "");
+		return temp;
+	}
+	public string GetFormatPropertyName(SchemaObjectBase schemaObject)
+	{
+        return GetPropertyName(schemaObject.Name);
+        /*
+		bool isHasChar = false;
+        string temp = "";
+		string str = GetPropertyName(schemaObject.Name);
+		
+        if (str.Contains("_"))
+        {
+
+            string s1 = str.Substring(0, str.LastIndexOf("_"));
+            string s2 = str.Substring(str.LastIndexOf("_"), str.Length - str.LastIndexOf("_"));
+
+            if (s2 == "_ID" || s2 == "_GID")
+            {
+                str = s1;
+                isHasChar = true;
+            }
+
+            str = str.ToLower();
+
+            char[] array = str.ToCharArray();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i == 0)
+                {
+                    array[0] = Convert.ToChar(array[0].ToString().ToUpper());
+                }
+
+                if (array[i].ToString() == "_")
+                {
+                    array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+                }
+                temp += array[i].ToString();
+            }
+
+            if (s2 != "" && isHasChar == true)
+                temp += s2;
+            
+            temp = temp.Replace("_", "");
+        }
+        else if(str.ToUpper() == "ROWID")
+		{
+			temp = "RowID";
+		}
+		else
+		{         
+			//temp = str;
+			char[] tempArray = str.ToLower().ToCharArray();
+                for (int n = 0; n < tempArray.Length; n++)
+                {
+                    if (n == 0)
+                    {
+                        tempArray[n] = Convert.ToChar(tempArray[n].ToString().ToUpper());                        
+                    }
+                    temp += tempArray[n].ToString();
+                }
+		}
+		return temp;
+        */
+	}
+public string GenPrimaryKeySentence(TableSchema table)
+		{
+			if (table.PrimaryKey != null)
+			{
+				if (table.PrimaryKey.MemberColumns.Count == 1)
+				{
+					return GetCSType(table.PrimaryKey.MemberColumns[0]) + " " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[0]));
+				}
+				else
+				{
+					throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+		}
+		public string GenPrimaryKeyParam(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + GetCSType(table.PrimaryKey.MemberColumns[i]) + " " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i])) + ", ";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			s = s.Remove(s.Length - 2, 2);
+			return s;
+		}
+		public string GenPrimaryKeyParamValue(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + GetMemberVariableName(table.PrimaryKey.MemberColumns[i]) + " = " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i])) + ";\n\t\t\t";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			s = s.Remove(s.Length - 2, 2);
+			return s;
+		}
+		public string GetPrimaryKeySentences(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + "private " + GetCSType(table.PrimaryKey.MemberColumns[i]) + " " + GetMemberVariableName(table.PrimaryKey.MemberColumns[i]) + ";" + Environment.NewLine + "\t\t";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			return s;
+		}
+		
+		public string GetMemberVariableDeclarationStatement(ColumnSchema column)
+		{
+			return GetMemberVariableDeclarationStatement("protected", column);
+		}
+
+		public string GetMemberVariableDeclarationStatement(string protectionLevel, ColumnSchema column)
+		{
+			string statement = protectionLevel + " ";
+			statement += GetCSType(column) + " " + GetMemberVariableName(column);
+	
+			//string defaultValue = GetCSDefaultByType(column);
+			//if (defaultValue != "")
+			//{
+			//	statement += " = " + defaultValue;
+			//}
+	
+			statement += ";";
+	
+			return statement;
+		}
+		
+public string GetConstructorParameters( TableSchema table )
+{
+	string ret = "";
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret += GetDataType(column) + " " + GetCamelCaseName(GetPropertyName(column)) + ",\n\t\t\t";
+	}
+	return ret.Substring(0, ret.Length - 5);
+}
+
+public string GetAssignValue( TableSchema table )
+{
+	string ret = "";
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret += GetFormatPropertyName(column) + (new String(' ', GetPropertyNameMaxLength(table) - GetPropertyNameLength(column))) + " = " + GetCamelCaseName(GetPropertyName(column)) + ";\n\t\t\t";
+	}
+	return ret;
+}
+public int GetPropertyNameLength(ColumnSchema column)
+{
+	return (GetPropertyName(column)).Length;
+}
+public int GetPropertyNameMaxLength(TableSchema table)
+{
+	int ret = 0;
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret = ret < GetPropertyNameLength(column)?GetPropertyNameLength(column):ret;
+	}
+	return ret;
+}
+
+</script>

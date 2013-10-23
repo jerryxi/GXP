@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{37D1C4A9-4557-4E7A-9DE4-2A5C5738DB98}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GXP.IService</RootNamespace>
+    <AssemblyName>GXP.IService</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IAreaService.cs" />
+    <Compile Include="IFunctiongroupService.cs" />
+    <Compile Include="IInventoryService.cs" />
+    <Compile Include="IInvtransactionService.cs" />
+    <Compile Include="IItembrandService.cs" />
+    <Compile Include="IItemclassService.cs" />
+    <Compile Include="IItemfeedbackService.cs" />
+    <Compile Include="IItempropertyService.cs" />
+    <Compile Include="IItemService.cs" />
+    <Compile Include="IMembercommentService.cs" />
+    <Compile Include="IMemberlevelService.cs" />
+    <Compile Include="IMemberorderdetailService.cs" />
+    <Compile Include="IMemberorderService.cs" />
+    <Compile Include="IMemberService.cs" />
+    <Compile Include="IOperationlogService.cs" />
+    <Compile Include="IPurchaseorderdetailService.cs" />
+    <Compile Include="IPurchaseorderService.cs" />
+    <Compile Include="IRolefunctionService.cs" />
+    <Compile Include="IRoleService.cs" />
+    <Compile Include="ISalesorderdetailService.cs" />
+    <Compile Include="ISalesorderService.cs" />
+    <Compile Include="ISupplierService.cs" />
+    <Compile Include="ISyscodeService.cs" />
+    <Compile Include="ISyssettingService.cs" />
+    <Compile Include="IUserroleService.cs" />
+    <Compile Include="IUserService.cs" />
+    <Compile Include="IUsersupplierService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GXP.Common\GXP.Common.csproj">
+      <Project>{223481dd-6f24-440f-97ef-0430d6280e6b}</Project>
+      <Name>GXP.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GXP.DataEntity\GXP.DataEntity.csproj">
+      <Project>{cef4997c-1193-4452-8342-7ef5aa749716}</Project>
+      <Name>GXP.DataEntity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

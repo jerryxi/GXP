@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link href="../../Content/jquery-easyui/themes/icon.css" rel="stylesheet" />
+    <link href="../../Content/jquery-easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="Content/jquery-easyui/jquery.min.js"></script>
+    <script src="Content/jquery-easyui/jquery.easyui.min.js"></script>
+    <script>
+        function get()
+        {
+            var nodes = $('#tt').tree('getChecked');
+
+
+            alert(nodes[0].id);
+            alert(nodes[0].text);
+        }
+
+        $(document).ready(function () {
+
+            $('#tt2').tree({
+                data: [
+                    {
+                    id:'12',
+                    text: 'Item1',
+                    state: 'closed',
+                    children: [
+                        {
+                            id:'11111',
+                            text: 'Item11'
+                        },
+                        {
+                            id: '2222',
+                            text: 'Item12'
+                        }
+                    ]
+                },
+
+                {
+                    text: 'Item2'
+                }
+
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+afdadfsd<br />
+    <ul id="tt" class="easyui-tree" checkbox="true" state="closed">
+        <li>
+            <span>Folder</span>
+            <ul>
+                <li>
+                    <span>Sub Folder 1</span>
+                    <ul>
+                        <li id="111" checked="true"><span>File 11</span></li>
+                        <li checked="true"><span>File 12</span></li>
+                        <li checked="true"><span>File 13</span></li>
+                    </ul>
+                </li>
+                <li><span>File 2</span></li>
+                <li><span>File 3</span></li>
+            </ul>
+        </li>
+        <li><span>File21</span></li>
+    </ul>
+
+    <br />
+
+    <ul id="tt2" class="easyui-tree"></ul>
+
+    <br />
+
+    <input type="button" value="get selected" onclick="get()" />
+</body>
+</html>

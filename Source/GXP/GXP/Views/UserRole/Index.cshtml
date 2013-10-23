@@ -1,0 +1,379 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+    <link href="../../Content/jquery-easyui/themes/icon.css" rel="stylesheet" />
+    <link href="../../Content/jquery-easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../../Content/Site.css" rel="stylesheet" />
+    <script src="../../Content/utility.js"></script>
+    <script src="../../Content/jquery-easyui/jquery.min.js"></script>
+    <script src="../../Content/jquery-easyui/jquery.easyui.min.js"></script>
+    <script src="../../Content/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="../../Content/jquery-easyui/datapattern2.js"></script>
+
+    <script type="text/javascript">
+        var gridheight = document.documentElement.clientHeight - 100;
+        $(function () {
+            
+            //初始化弹出窗体
+            initTable();
+            
+            //注册查询按钮事件
+            SearchUserroleInfo();
+
+            //注册新增弹出框的保存按钮事件
+            BindRegistButtonClickEvent();
+
+            //注册新增弹出框的保存并继续按钮事件
+            BindRegistAndContinueButtonClickEvent();
+
+            //注册更新弹出框的保存按钮事件
+            BindUpdateButtonClickEvent();
+
+            //新增保存的时候只能添加一个用户名，进行异步判断
+            CheckUserroleInfoIsTrue();
+
+        });
+
+        //初始化表格 
+        function initTable(queryData) {
+            $('#Userrole').datagrid({
+                //title: 'Userrole',
+                //iconCls: 'icon-save',
+                height: gridheight,
+                nowrap: true,
+                autoRowHeight: false,
+                striped: true,
+                collapsible: true,
+                url: '/UserRole/GetAllUserrole',
+                sortName: 'Indx',
+                sortOrder: 'asc',
+                border: true,
+                remoteSort: true,
+                idField: 'Indx',
+                loadMsg: '请稍等...',
+                pageSize: @GXP.Common.ConstUtils.CONST_PAGE_SIZE,
+                pagination: true,
+                rownumbers: true,
+                fitColumns: false,
+                queryParams: queryData,
+                columns: [[
+                    { field: 'ck', checkbox: true },
+					{ field: 'Indx', title: '序号', width: 100, sortable: true }, 
+					{ field: 'UserID', title: '用户ID', width: 100, sortable: true }, 
+					{ field: 'RoleID', title: '角色ID', width: 100, sortable: true }, 
+					{ field: 'CreatedBy', title: '创建人', width: 100, sortable: true }, 
+					{ field: 'CreatedDate', title: '创建日期', width: 100, sortable: true }
+					
+                ]],                
+
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        //实现弹出添加用户信息的层
+                        ShowCreateUserroleDialog();
+                    }
+                }, '-', {
+                    id: 'btnEdit',
+                    text: '修改',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        //实现弹出修改用户信息的层
+                        ShowEditUserroleDialog();
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        //确认只删除一条用户信息
+                        DeleteUserroleInfoByClick();
+                    }
+                }
+                ]
+            });
+        }
+
+        //弹出添加用户的对话框
+        function ShowCreateUserroleDialog() {
+            //实现弹出添加用户信息的层
+            $('#EditUserroleDialog').dialog('open').dialog('setTitle', '新增用户信息');
+            //$("#UserCode").css("background-color", "");
+            //$("#UserCode").removeAttr("readonly");
+            //添加完成后清空文本框的值
+            ClearTextBox();
+        }
+
+        //弹出修改用户的对话框
+        function ShowEditUserroleDialog() {
+            var UpdateUserroleInfoID = $("#Userrole").datagrid("getSelections");
+            if (UpdateUserroleInfoID.length == 1) {
+                $("#EditUserroleDialog").dialog("open").dialog("setTitle", "修改用户信息");
+                //绑定显示修改的详细信息的内容
+                BingUpdateDetailsShowTextBox();
+            }
+            else {
+                $.messager.alert("提示", "每次只能修改一行数据，你已经选择了<font color='red' size='3'>" + UpdateUserroleInfoID.length + "</font>行");
+            }
+        }
+
+        //实现多选删除信息
+        function DeleteUserroleInfoByClick() {
+            //获取到用户选定的某一列的ID号
+            var deleteID = $("#Userrole").datagrid("getSelections");
+            //判断用户选择了多少条数据
+            //异步将删除的ID发送到后台，后台删除之后，返回前台OK，前台刷新表格
+            if (deleteID.length >= 1) {
+                var ids = "";   //1,2,3,4
+                for (var i = 0; i < deleteID.length; i++) {
+                    ids += deleteID[i].Indx + ",";
+                }
+                //去掉最后的一个,
+                ids = ids.substring(0, ids.length - 1);
+
+                //遍历出被删除用户的信息
+                var tmpList = "";
+                for (var i = 0; i < deleteID.length; i++) {
+                    tmpList += deleteID[i].Indx + ",";
+                }
+                tmpList = tmpList.substring(0, tmpList.length - 1);
+                //发送异步请求删除数据
+                $.messager.confirm("删除信息", "确认删除<font color='Red' size='3'>" + tmpList + "</font>吗？", function (DeleteUserroleInfo) {
+                    if (DeleteUserroleInfo) {
+                        $.post("/UserRole/Delete", { deleteID: ids }, function (data) {
+                            if (data == "OK") {
+                                $.messager.alert("提示", "删除成功");
+                                $("#Userrole").datagrid("reload");
+                                $("#Userrole").datagrid("clearSelections");
+                            }
+                            else {
+                                $.messager.alert("提示", "删除失败:" + data);
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                $.messager.alert("提示", "请选择您要删除的数据");
+            }
+        }
+        
+        //注册新增弹出框的保存按钮事件
+        function BindRegistButtonClickEvent() {
+            $("#btnSave").click(function () {
+                //验证所有的文本框是否通过用户的验证
+                var valid = $('#EditUserroleInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postdata = {                    
+                    Indx: $("#Indx").val(),
+                    UserID: $("#UserID").val(),
+                    RoleID: $("#RoleID").val(),
+                    CreatedBy: $("#CreatedBy").val(),
+                    CreatedDate: $("#CreatedDate").val()
+                };
+                //发送异步请求到后台保存用户数据
+                $.post("/UserRole/Edit", postdata, function (data) {
+                    if (data == "OK") {
+                        //添加成功，(1)关闭对话框，刷新表格
+                        alert("添加成功");
+                        $('#EditUserroleDialog').dialog('close');
+                        $("#Userrole").datagrid("reload");
+                    }
+                    else {
+                        alert("添加失败，请检查"+data);
+                    }
+                });
+            });
+        }
+
+        //注册新增弹出框的保存按钮事件
+        function BindRegistAndContinueButtonClickEvent() {
+            $("#btnSaveAndCon").click(function () {
+                //验证所有的文本框是否通过用户的验证d
+                var valid = $('#EditUserroleInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postdata = {
+                    Indx: $("#Indx").val(),
+                    UserID: $("#UserID").val(),
+                    RoleID: $("#RoleID").val(),
+                    CreatedBy: $("#CreatedBy").val(),
+                    CreatedDate: $("#CreatedDate").val()
+                };
+                //发送异步请求到后台保存用户数据
+                $.post("/UserRole/Edit", postdata, function (data) {
+                    if (data == "OK") {
+                        //添加成功，(1)关闭对话框，刷新表格
+                        //alert("添加成功");
+                        //$('#EditUserDialog').dialog('close');
+                        //$("#Users").datagrid("reload");
+                        ClearTextBox();
+                        //$("#UserID").focus();
+                    }
+                    else {
+                        alert("添加失败，请检查!"+data);
+                    }
+                });
+            });
+        }
+
+        //修改用户的信息
+        function BindUpdateButtonClickEvent() {
+            $("#btnUpdate").click(function () {
+                //首先判断前台的验证是否通过
+                var valid = $('#EditUserroleInfo').form('validate');
+                if (valid == false) {
+                    return false;
+                }
+                var postData = {
+                    Indx: $("#Indx").val(),
+                    UserID: $("#UserID").val(),
+                    RoleID: $("#RoleID").val(),
+                    CreatedBy: $("#CreatedBy").val(),
+                    CreatedDate: $("#CreatedDate").val()
+                };
+
+                //使用异步实现修改用户信息
+                $.post("/UserRole/Update", postData, function (data) {
+                    if (data == "OK") {
+                        $("#Edit'Userrole'Dialog").dialog('close');
+                        $("#Userrole").datagrid('reload');
+                    }
+                    else {
+                        alert("修改失败，请检查!"+data);
+                    }
+                });
+            });
+        }
+
+        //绑定修改用户的信息显示在用户的TextBox文本框中
+        function BingUpdateDetailsShowTextBox() {
+            //首先获取选中的用户的ID
+            var checkID = $("#Userrole").datagrid("getSelections")[0].Indx;
+            //使用异步的getJSON请求绑定前台传递过来的数据
+            $.getJSON("/UserRole/GetUserroleInfoByID", { ID: checkID }, function (data) {                
+                $("#Indx").val(data.Indx);
+                $("#UserID").val(data.UserID);
+                $("#RoleID").val(data.RoleID);
+                $("#CreatedBy").val(data.CreatedBy);
+                $("#CreatedDate").val(data.CreatedDate);
+            });
+        }
+
+        //当添加或者修改完成后清空文本框中的值
+        function ClearTextBox() {                
+            $("#Indx").val("");
+            $("#UserID").val("");
+            $("#RoleID").val("");
+            $("#CreatedBy").val("");
+            $("#CreatedDate").val("");
+        }
+
+        //检查用户名是否存在
+        function CheckUserroleInfoIsTrue() {
+            $("#UserCode").blur(function () {
+                if (typeof ($("#UserCode").attr("readonly")) == "undefined") {
+                    //获取输入到控件的值
+                    var UserCode = $("#UserCode").val();
+                    //使用异步验证
+                    $.post("/UserRole/CheckUnique", { code: UserCode }, function (data) {
+                        if (data == "NO") {
+                            alert("用户名已经存在，请您检查");
+                            $("#UserCode").val("");
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+
+        //搜索数据信息
+        function SearchUserroleInfo() {
+            $("#btnSerach").click(function () {
+                var queryData = { 
+                    Q_Indx: $("#Q_Indx").val(), 
+                    Q_UserID: $("#Q_UserID").val(), 
+                    Q_RoleID: $("#Q_RoleID").val(), 
+                    Q_CreatedBy: $("#Q_CreatedBy").val(), 
+                    Q_CreatedDate: $("#Q_CreatedDate").val()
+                };
+                initTable(queryData);
+                return false;  
+            });
+        }
+    </script>
+</head>
+<body>
+    <fieldset>
+        <legend>查询</legend>
+        <div>
+            <label for="Q_Indx">序号：</label>
+            <input type="text" id="Q_Indx" name="Q_Indx" />&nbsp;&nbsp; 
+            <label for="Q_UserID">用户ID：</label>
+            <input type="text" id="Q_UserID" name="Q_UserID" />&nbsp;&nbsp; 
+            <label for="Q_RoleID">角色ID</label>
+            <input type="text" id="Q_RoleID" name="Q_RoleID" />&nbsp;&nbsp; 
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSerach" name="btnSerach">查询</a>
+        </div>
+    </fieldset>
+    <div>
+        <table id="Userrole"></table>
+    </div>
+    <div id="EditUserroleDialog" class="easyui-dialog" style="width: 500px; height: 500px; padding: 10px 20px"
+        closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="EditUserroleInfo" method="post" novalidate="novalidate">
+            <table id="tableEdit">
+                <tr>
+                    <th colspan="2">信息</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Indx">序号：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="Indx" name="Indx" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="UserID">用户ID：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="UserID" name="UserID" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="RoleID">角色ID：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="RoleID" name="RoleID" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CreatedBy">创建人：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CreatedBy" name="CreatedBy" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="CreatedDate">创建日期：</label></td>
+                    <td>
+                        <input class="easyui-textbox" type="text" id="CreatedDate" name="CreatedDate" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center; padding-top: 10px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnSave" iconcls="icon-ok">保存</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#EditUserroleDialog').dialog('close')">关闭</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,62 @@
+﻿@using GXP.DataEntity
+@model GXP.DataEntity.UserInfo
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>设置角色</title>
+    <!--添加发送异步请求到后台的引用，MVC实现-->
+    <script src="../../Content/JqueryEasyUI/jquery-1.8.0.min.js"></script>
+    <script src="../../Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script type="text/javascript">
+        function afterSetRole() {
+            //调用父容器的一个方法，关闭对话框
+            alert("afd");
+            window.parent.afterSetRole();
+        }
+    </script>
+</head>
+<body>
+    <div> 
+        <fieldset>
+            <legend>给用户:<font size="2px" color="blue">@Model.UserName </font>设置角色</legend>
+            @{
+                using (Ajax.BeginForm("SetRole", "UserInfo", new AjaxOptions { OnSuccess = "afterSetRole" }, new { id = "frameSetRole" }))
+                {
+                    //隐藏域，用来给后台传递用户的ID
+                    <input type="hidden" name="hdnUserID" value="@Model.UserID" />
+                    var allRoles = (List<RoleInfo>)ViewBag.AllRoles;
+                    //获取前台传递过来的是否选中的数据
+                    var extIsRoleIds = (List<string>)ViewBag.ExtIsRoleIDS;
+
+                    for (int i = 0; i < allRoles.Count; i++)
+                    {
+                        if (i == 3)
+                        {
+                            <br /><br />
+                        }
+                        string roleStr = "sru_" + allRoles[i].RoleID;
+                        if (extIsRoleIds.Contains(allRoles[i].RoleID.ToString()))
+                        {
+                            <input type="checkbox" checked="checked" value="@roleStr" name="@roleStr" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="@roleStr" value="@roleStr" />
+                        }
+                        <label for="@roleStr">@allRoles[i].RoleName</label><span>&nbsp;&nbsp;</span>
+                    }
+                    <br /><br />
+                    <div style="text-align:center;">
+                        <input type="submit" value="设置角色" />
+                    </div>               
+                }
+            }
+        </fieldset>
+    </div>
+</body>
+</html>

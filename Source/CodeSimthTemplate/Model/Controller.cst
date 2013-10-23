@@ -1,0 +1,794 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" ResponseEncoding="UTF-8" Src="..\CommonSqlCode.cs" Inherits="MoM.Templates.CommonSqlCode" Debug="False" Description="Template description here." %>
+<%@ Property Name="DevelopersName" Type="String" Category="Context" Description="The name to include in the comment header" %>
+<%@ Property Name="NameSpace" Type="String" Category="Context"  Description="The namespace to use for this class" %>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Context" Optional="false" Description="Database that the documentation should be based on." %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="DetailTable" Type="SchemaExplorer.TableSchema" Category="Context" Optional="True" Description="Table that the object is based on." %>
+<%@ Property Name="StoreProcedure" Type="SchemaExplorer.CommandSchema " Category="Context" Optional="True" Description="Table that the object is based on." %>
+<%@ Property Name="View" Type="SchemaExplorer.ViewSchema " Category="Context" Optional="True" Description="Table that the object is based on." %>
+
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Web.Mvc;
+
+using GXP.IService;
+using GXP.DataEntity;
+using GXP.Common;
+using Newtonsoft.Json;
+
+namespace GXP.Controllers
+{	
+ 	public class <%=FormatClassName(SourceTable) %>Controller : BaseController
+ 	{
+        public ActionResult Index()
+        {
+            ViewBag.Message = "欢迎使用!";
+            return View();
+        }
+    
+        public string GetAll<%=FormatClassName(SourceTable) %>()
+        {            
+            I<%=FormatClassName(SourceTable) %>Service tmpService = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+            var data = tmpService.Get<%=FormatClassName(SourceTable) %>ByQueryList(InitQueryEntity());
+            Newtonsoft.Json.Converters.IsoDateTimeConverter timeConverter = new Newtonsoft.Json.Converters.IsoDateTimeConverter();
+            timeConverter.DateTimeFormat = ConstUtils.CONST_SHOW_DATE_FORMAT;
+            var tmpdata = JsonConvert.SerializeObject(data.Tables[2], timeConverter);
+            var result = "{\"total\":" + data.Tables[1].Rows[0]["TotalRecordsCount"].ToString() + ",\"rows\":" + tmpdata + " }";
+            return result;
+        }
+    
+        public ActionResult Get<%=FormatClassName(SourceTable) %>InfoByID(string id)
+        {
+            I<%=FormatClassName(SourceTable) %>Service <%=FormatClassNameLower(SourceTable) %>Service = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+            var data = <%=FormatClassNameLower(SourceTable) %>Service.Get<%=FormatClassName(SourceTable) %>ByID(id);
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        
+        public ActionResult Edit(<%=FormatClassName(SourceTable) %>Info <%=FormatClassNameLower(SourceTable) %>Info)
+        {
+            if (<%=FormatClassNameLower(SourceTable) %>Info.<%=GetOriginalPrimaryKey(SourceTable) %> == 0)
+            {
+                return Insert(<%=FormatClassNameLower(SourceTable) %>Info);
+            }
+            else
+            {
+                return Update(<%=FormatClassNameLower(SourceTable) %>Info);
+            }
+        }
+        
+        public ActionResult Insert(<%=FormatClassName(SourceTable) %>Info <%=FormatClassName(SourceTable).ToLower() %>Info)
+        {            
+            try
+            {
+                <%=FormatClassName(SourceTable).ToLower() %>Info.CreatedDate = DateTime.Now;
+                <%=FormatClassName(SourceTable).ToLower() %>Info.UpdatedDate = DateTime.Now;
+                <%=FormatClassName(SourceTable).ToLower() %>Info.CreatedBy = CurrentUserInfo.UserCode;
+                <%=FormatClassName(SourceTable).ToLower() %>Info.UpdatedBy = CurrentUserInfo.UserCode;
+                I<%=FormatClassName(SourceTable) %>Service <%=FormatClassName(SourceTable).ToLower() %>Service = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+                var data = <%=FormatClassName(SourceTable).ToLower() %>Service.Insert<%=FormatClassName(SourceTable) %>(<%=FormatClassName(SourceTable).ToLower() %>Info);
+                LogHelper.LogOperation(CurrentUserInfo.UserCode, string.Format("Insert <%=FormatClassName(SourceTable) %>Info {0},{1}", LogHelper.ChangeEntityToLog(<%=FormatClassName(SourceTable).ToLower() %>Info), data));
+                if (data > 0)
+                {
+                    return Content("OK");
+                }
+                else
+                {
+                    return Content("Failed");
+                }
+            }
+            catch (BusinessException bex)
+            {
+                return Content(bex.Message);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(ex, "");
+                return Content(ex.Message);
+            }
+        }
+        
+        public ActionResult Update(<%=FormatClassName(SourceTable) %>Info <%=FormatClassName(SourceTable).ToLower() %>Info)
+        {
+            try
+            {
+                <%=FormatClassName(SourceTable).ToLower() %>Info.UpdatedBy = CurrentUserInfo.UserName;
+                <%=FormatClassName(SourceTable).ToLower() %>Info.UpdatedDate = DateTime.Now;
+                I<%=FormatClassName(SourceTable) %>Service <%=FormatClassName(SourceTable).ToLower() %>Service = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+                var data = <%=FormatClassName(SourceTable).ToLower() %>Service.Update<%=FormatClassName(SourceTable) %>(<%=FormatClassName(SourceTable).ToLower() %>Info);
+                LogHelper.LogOperation(CurrentUserInfo.UserCode, string.Format("Update <%=FormatClassName(SourceTable) %>Info {0},{1}", LogHelper.ChangeEntityToLog(<%=FormatClassName(SourceTable).ToLower() %>Info), data));
+                if (data > 0)
+                {
+                    return Content("OK");
+                }
+                else
+                {
+                    return Content("Failed");
+                }
+            }
+            catch (BusinessException bex)
+            {
+                return Content(bex.Message);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(ex, "");
+                return Content(ex.Message);
+            }
+        }
+        
+        public ActionResult Delete(string deleteID)
+        {
+            try
+            {
+                I<%=FormatClassName(SourceTable) %>Service <%=FormatClassName(SourceTable).ToLower() %>Service = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+                var data = <%=FormatClassName(SourceTable).ToLower() %>Service.Delete<%=FormatClassName(SourceTable) %>(deleteID.Split(',').ToList());
+                LogHelper.LogOperation(CurrentUserInfo.UserCode, string.Format("Delete <%=FormatClassName(SourceTable) %>Info {0},{1}", deleteID, data));
+                if (data > 0)
+                {
+                    return Content("OK");
+                }
+                else
+                {
+                    return Content("Failed");
+                }                
+            }
+            catch (BusinessException bex)
+            {
+                return Content(bex.Message);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(ex, "");
+                return Content(ex.Message);
+            }
+        }
+        
+        public void Export()
+        {
+            I<%=FormatClassName(SourceTable) %>Service <%=FormatClassName(SourceTable).ToLower() %>Service = UnityHelper.UnityResolve<I<%=FormatClassName(SourceTable) %>Service>();
+            QueryEntity qe = InitQueryEntity();
+            qe.IsGetAll = true;
+            var data = <%=FormatClassName(SourceTable).ToLower() %>Service.Get<%=FormatClassName(SourceTable) %>ByQueryList(qe);
+            Export2Excel("<%=FormatClassName(SourceTable) %>.xls", data);
+        }
+        
+        public ActionResult CheckUnique(string code)
+        {            
+            return Content("PASS");
+        }
+	}
+}
+<script runat="template">
+
+//Note :生成DAL层的方法
+//Create By : Jerry
+//Create Date : 2008-07-05
+
+	public string GetUpdateSQLString(SchemaObjectBase schemaObject)
+	{
+		string pramaryKey = GetEntityClassName(SourceTable)+"_GID";
+		string sql = "\"UPDATE "+GetEntityClassName(SourceTable) + " SET ";
+		for(int i=0;i<SourceTable.Columns.Count;i++)
+		{
+			if ( GetPropertyName(SourceTable.Columns[i]) == "TS")
+			{
+				continue;
+			}
+			if ( GetPropertyName(SourceTable.Columns[i]) == "ROWID")
+			{
+				continue;
+			}
+			else if ( GetPropertyName(SourceTable.Columns[i]) == "CREATED_BY")
+			{
+				continue;
+			}
+			else if ( GetPropertyName(SourceTable.Columns[i]) == "CREATED_DATE")
+			{
+				continue;
+			}
+			else if ( SourceTable.Columns[i].IsPrimaryKeyMember == true)
+			{
+				continue;
+			}
+			else if ( GetPropertyName(SourceTable.Columns[i]) == "UPDATED_DATE")
+			{
+				string temp = GetPropertyName(SourceTable.Columns[i]);
+				sql += temp + " = GETDATE(), ";
+				continue;
+			}			
+			else
+			{
+				string temp = GetPropertyName(SourceTable.Columns[i]);
+				sql +=  temp+" = @"+temp+", ";
+			}
+		}
+		sql = sql.Substring(0,sql.LastIndexOf(","));
+		sql += " WHERE " + GenPrimaryKeyParamValue1(SourceTable) + " \";";
+		return sql;
+	}
+	
+	//得到新增的SQL语句
+	public string GetInsertSQLString(SchemaObjectBase schemaObject)
+	{
+		string pramaryKey = GetEntityClassName(SourceTable)+"_GID";
+		string sql = "\"INSERT INTO " + GetEntityClassName(SourceTable) + " ( ";
+		
+		for(int i=0;i<SourceTable.Columns.Count;i++)
+		{			
+			if(GetPropertyName(SourceTable.Columns[i]).ToUpper() != "ROWID" && GetPropertyName(SourceTable.Columns[i]).ToUpper() != "TS")
+			{
+				if(i == SourceTable.Columns.Count - 1)
+				{
+					sql += GetPropertyName(SourceTable.Columns[i]) + ") VALUES ( ";
+				}
+				else
+				{
+					sql += GetPropertyName(SourceTable.Columns[i]) + ", ";
+				}
+			}
+			else if(i == SourceTable.Columns.Count - 1)
+			{
+				sql += GetPropertyName(SourceTable.Columns[i]) + ") VALUES ( ";
+			}
+		}
+		
+		for(int i=0;i<SourceTable.Columns.Count;i++)
+		{
+			if(GetPropertyName(SourceTable.Columns[i]).ToUpper() == "CREATED_DATE" || GetPropertyName(SourceTable.Columns[i]).ToUpper() == "UPDATED_DATE")
+			{
+				if(i == SourceTable.Columns.Count - 1)
+				{
+					sql += "GETDATE() ) ";
+				}
+				else
+				{
+					sql += "GETDATE(), ";
+					}
+			}
+			else
+			{
+				if(GetPropertyName(SourceTable.Columns[i]).ToUpper() != "ROWID" 
+                && GetPropertyName(SourceTable.Columns[i]).ToUpper() != "TS"
+                && i != SourceTable.Columns.Count - 1)
+				{
+					sql += "@" + GetPropertyName(SourceTable.Columns[i]) + ", ";
+				}
+				else if(i == SourceTable.Columns.Count - 1)
+				{
+					sql += "@" + GetPropertyName(SourceTable.Columns[i]) + ") ";
+				}
+			}
+		}
+		
+		return sql;
+	}
+	//得到查询的SQL语句
+    public string GetSelectSQLString(SchemaObjectBase schemaObject)
+    {
+        string sql = "SELECT ";
+        string tableName = GetEntityClassName(SourceTable);
+        string shortTableName = GetTableShortName(SourceTable);
+        for(int i=0;i<SourceTable.Columns.Count;i++)
+		{
+            sql += shortTableName+"."+GetPropertyName(SourceTable.Columns[i])+" AS "+GetPropertyName(SourceTable.Columns[i])+", ";
+        }
+        sql = sql.Substring(0,sql.Length-2) + " FROM " + tableName + " "+GetTableShortName(schemaObject) + " WHERE 1=1 ";        
+        return sql;
+    }
+    
+    //组织DataReader出来的数据
+	public string GetSQLDataReaderString(SchemaObjectBase schemaObject)
+	{
+		int count = SourceTable.Columns.Count;
+		string str = "reader[\"@\"].ToString()";
+		string temp = "";
+		
+		for(int i=0;i<count;i++)
+		{		
+			if(SourceTable.Columns[i].DataType==System.Data.DbType.DateTime)
+			{
+				temp+=str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"!=\"\" ? "+"DateTime.Parse("+str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"):new DateTime(),";
+			}
+			else if (SourceTable.Columns[i].DataType==System.Data.DbType.Decimal)
+			{
+				temp+=str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"!=\"\" ? "+"Decimal.Parse("+str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"):0,";
+			}
+			else if (SourceTable.Columns[i].DataType==System.Data.DbType.Double)
+			{
+				temp+=str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"!=\"\" ? "+"float.Parse("+str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"):0,";
+			}
+			else if(SourceTable.Columns[i].DataType == System.Data.DbType.Int32)
+			{
+				temp+=str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"!=\"\" ? "+"Int32.Parse("+str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+"):0,";
+			}
+			else if(SourceTable.Columns[i].DataType == System.Data.DbType.Binary)
+			{
+				string s = str.Substring(0, str.IndexOf("."));
+				temp+=s.Replace("@",GetPropertyName(SourceTable.Columns[i]))+",";
+			}
+			else
+				temp += str.Replace("@",GetPropertyName(SourceTable.Columns[i]))+",";		
+            
+            temp += "\n";
+		}
+		
+		temp = temp.Substring(0, temp.LastIndexOf(","));
+		
+		return temp;
+	}
+	//格式化类名
+	public string FormatClassName(SchemaObjectBase schemaObject)
+	{
+		string str="";
+		str=GetClassName(schemaObject.Name);
+		str=str.ToLower();
+		string temp = "";
+		char[] array = str.ToCharArray();
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (i == 0)
+            {
+                array[0] = Convert.ToChar(array[0].ToString().ToUpper());                    
+            }
+          
+            if (array[i].ToString() == "_")
+            {
+                array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+            } 
+            temp += array[i].ToString();
+        }
+		if(temp.Contains("_"))
+        	temp = temp.Replace("_", "");
+			
+		return temp;
+	}
+    public string FormatClassNameLower(SchemaObjectBase schemaObject)
+	{
+		string str="";
+		str=GetClassName(schemaObject.Name);
+		str=str.ToLower();
+		string temp = "";
+		char[] array = str.ToCharArray();
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (i == 0)
+            {
+                array[0] = Convert.ToChar(array[0].ToString().ToUpper());                    
+            }
+          
+            if (array[i].ToString() == "_")
+            {
+                array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+            } 
+            temp += array[i].ToString();
+        }
+		if(temp.Contains("_"))
+        	temp = temp.Replace("_", "");
+			
+		return temp.ToLower();
+	}
+    
+    
+	//???????????????????
+	public string FormatParamClassName(SchemaObjectBase schemaObject)
+	{
+		string str="";
+		str=GetClassName(schemaObject.Name);
+		str=str.ToLower();
+		string temp = "";
+		char[] array = str.ToCharArray();
+        for (int i = 0; i < array.Length; i++)
+        {
+            //if (i == 0)
+            //{
+            //    array[0] = Convert.ToChar(array[0].ToString().ToUpper());                    
+            //}
+          
+            if (array[i].ToString() == "_")
+            {
+                array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+            } 
+            temp += array[i].ToString();
+        }
+        temp = temp.Replace("_", "");
+		return temp;
+	}
+
+	public string GenPrimaryKeySentence(TableSchema table)
+		{
+			if (table.PrimaryKey != null)
+			{
+				if (table.PrimaryKey.MemberColumns.Count == 1)
+				{
+					return GetCSType(table.PrimaryKey.MemberColumns[0]) + " " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[0]));
+				}
+				else
+				{
+					throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+		}
+	
+    //得到表的缩写（首字母）
+    public string GetTableShortName(SchemaObjectBase schemaObject)
+    {
+        string str = "";
+        string tableName = GetEntityClassName(SourceTable);
+        string[] lst = tableName.Split(new char[]{'_'});
+        for(int i=0;i<lst.Length;i++)
+        {
+            str += lst[i].Substring(0,1);
+            }
+        return str;
+    }
+    
+		public string GenPrimaryKeyParam(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + GetCSType(table.PrimaryKey.MemberColumns[i]) + " " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i])) + ", ";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			s = s.Remove(s.Length - 2, 2);
+			return s;
+		}
+		public string GenPrimaryKeyParamValue(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + GetMemberVariableName(table.PrimaryKey.MemberColumns[i]) + " = " + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i])) + ";\n\t\t\t";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			s = s.Remove(s.Length - 2, 2);
+			return s;
+		}
+		public string GenPrimaryKeyParamValue1(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i])) + " = " +"@"+GetCamelCaseName(GetSafeName(table.PrimaryKey.MemberColumns[i]))+" AND ";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			//s = s.Remove(s.Length - 1, 1);
+			s = s.Substring(0,s.Length-4);
+			return s.ToUpper();
+		}
+		public string GetPrimaryKeySentences(TableSchema table)
+		{
+			string s = "";
+			if (table.PrimaryKey != null)
+			{
+				for(int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++)
+				{
+					s = s + "private " + GetCSType(table.PrimaryKey.MemberColumns[i]) + " " + GetMemberVariableName(table.PrimaryKey.MemberColumns[i]) + ";" + Environment.NewLine + "\t\t";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}
+			return s;
+		}
+		public string GetOriginalPrimaryKey(TableSchema table)
+		{			
+			return table.PrimaryKey.MemberColumns[0].Name;
+		}
+		public string GetPrimaryKey(TableSchema table)
+		{
+			string s="";
+			if(table.PrimaryKey !=null)
+			{
+				for(int i=0;i<table.PrimaryKey .MemberColumns .Count ;i++)
+				{
+					s=s+GetMemberVariableName(table.PrimaryKey.MemberColumns[i])+";" + Environment.NewLine + "\t\t";
+				}
+			}
+			else
+			{
+				throw new ApplicationException("This template will only work on tables with a primary key.");
+			}		
+			s=s.Substring (1,s.LastIndexOf(";")-1);
+			return s;
+		}
+		
+		public string GetMemberVariableDeclarationStatement(ColumnSchema column)
+		{
+			return GetMemberVariableDeclarationStatement("protected", column);
+		}
+
+		public string GetMemberVariableDeclarationStatement(string protectionLevel, ColumnSchema column)
+		{
+			string statement = protectionLevel + " ";
+			statement += GetCSType(column) + " " + GetMemberVariableName(column);
+	
+			
+			statement += ";";
+	
+			return statement;
+		}
+		
+public string GetConstructorParameters( TableSchema table )
+{
+	string ret = "";
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret += GetCSType(column) + " " + GetCamelCaseName(GetPropertyName(column)) + ",\n\t\t\t";
+	}
+	return ret.Substring(0, ret.Length - 5);
+}
+
+public string GetAssignValue( TableSchema table )
+{
+	string ret = "";
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret += GetMemberVariableName(column) + (new String(' ', GetPropertyNameMaxLength(table) - GetPropertyNameLength(column))) + " = " + GetCamelCaseName(GetPropertyName(column)) + ";\n\t\t\t";
+	}
+	return ret;
+}
+public int GetPropertyNameLength(ColumnSchema column)
+{
+	return (GetPropertyName(column)).Length;
+}
+public int GetPropertyNameMaxLength(TableSchema table)
+{
+	int ret = 0;
+	foreach(ColumnSchema column in table.Columns)
+	{
+		ret = ret < GetPropertyNameLength(column)?GetPropertyNameLength(column):ret;
+	}
+	return ret;
+}
+
+	public string GetSqlDataType(DbType dataType)
+		{
+			switch (dataType)
+			{
+				case DbType.AnsiString: return "SqlDbType.VarChar";
+				//case DbType.AnsiStringFixedLength: return SqlDbType.;
+				case DbType.Binary: return "SqlDbType.Binary";
+				case DbType.Boolean: return "SqlDbType.Bit";
+				case DbType.Byte: return "SqlDbType.Binary";
+				//case DbType.Currency: return "NullableDecimal";
+				case DbType.Date: return "SqlDbType.Date";
+				case DbType.DateTime: return "SqlDbType.DateTime";
+				case DbType.Decimal: return "SqlDbType.Decimal";
+				case DbType.Double: return "SqlDbType.Float";
+				case DbType.Guid: return "SqlDbType.UniqueIdentifier";
+				case DbType.Int16: return "SqlDbType.SmallInt";
+				case DbType.Int32: return "SqlDbType.Int";
+				case DbType.Int64: return "SqlDbType.BigInt";
+				//case DbType.Object: return SqlDbType.;
+				case DbType.Single: return "SqlDbType.Real";
+				case DbType.String: return "SqlDbType.NText";
+				case DbType.StringFixedLength: return "SqlDbType.NChar";
+				case DbType.Time: return "SqlDbType.Time";
+				//case DbType.VarNumeric: return SqlDbType.v;
+					//the following won't be used
+					//		case DbType.SByte: return "NullableSByte";
+					//		case DbType.UInt16: return "NullableUShort";
+					//		case DbType.UInt32: return "NullableUInt";
+					//		case DbType.UInt64: return "NullableULong";
+				default: return "SqlDbType.VarChar";
+			}
+		}
+		
+	public string SetSqlparam(TableSchema table)
+		{
+			string s = "";
+			   for (int i = 0; i < table.Columns.Count; i++)
+				{
+					if (table.Columns[i].DataType == System.Data.DbType.Binary)//TS过滤
+					{
+						continue;
+					}
+					if (table.Columns[i].Name.ToUpper() == "ROWID")//ROWID过滤
+					{
+						continue;
+					}
+					if (table.Columns[i].Name.ToUpper() == "CREATED_DATE")//CREATED_DATE
+					{
+						continue;
+					}
+					if (table.Columns[i].Name.ToUpper() == "UPDATED_DATE")//UPDATED_DATE过滤
+					{
+						continue;
+					}
+					
+					s = s + "new SqlParameter(this."+GetPropertyName(SourceTable.Columns[i])+ ","+GetSqlDataType(SourceTable.Columns[i].DataType)+","+SourceTable.Columns[i].Size.ToString()+")"+",\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+				}				
+			s = s.Remove(s.Length - 2, 2);
+			s = s.Substring(0,s.LastIndexOf(","));
+			return s;
+		}
+		
+	public string SetSqlparamArray(TableSchema table)
+    {
+    	string s = "";
+		int iParamSeq = -1;
+		for(int i = 0;i<table.Columns.Count;i++)
+		{			
+			if (table.Columns[i].DataType == System.Data.DbType.Binary)//TS过滤
+			{
+				continue;
+			}
+			if (table.Columns[i].Name.ToUpper() == "ROWID")//ROWID过滤
+			{
+				continue;
+			}
+			if (table.Columns[i].Name.ToUpper() == "CREATED_DATE")//CREATED_DATE
+			{
+				continue;
+			}
+			if (table.Columns[i].Name.ToUpper() == "UPDATED_DATE")//UPDATED_DATE过滤
+			{
+				continue;
+			}
+			iParamSeq++;
+			if(table.Columns[i].AllowDBNull)
+			{
+				if(table.Columns[i].DataType == System.Data.DbType.AnsiString)
+				{
+					s = s +"\n\t\t\t\t"+"if(!string.IsNullOrEmpty("+FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+"))"+"\n\t\t\t\t";
+					s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";
+					s=s+"else"+"\n\t\t\t\t";
+					s=s+"  paramArray["+iParamSeq+"].Value="+"DBNull.Value"+";"+"\n\t\t\t\t";
+				}
+				else if(table.Columns[i].DataType == System.Data.DbType.DateTime)
+				{
+					if(GetPropertyName(table.Columns[i]) == "UPDATED_DATE")
+					{
+						s = s + "\n\t\t\t\t";
+						s = s +"  paramArray["+iParamSeq+"].Value=DateTime.Now;"+"\n\t\t\t\t";
+					}
+					else
+					{					
+						s = s +"\n\t\t\t\t"+"if("+FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+" != new DateTime()"+")"+"\n\t\t\t\t";
+						s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";
+						s=s+"else"+"\n\t\t\t\t";
+						s=s+"  paramArray["+iParamSeq+"].Value="+"DBNull.Value"+";"+"\n\t\t\t\t";
+					}
+					
+				}
+				
+				//begin  给UpdatedDate赋服务器时间
+				else if(GetPropertyName(table.Columns[i]) == "UPDATED_DATE")
+				{
+					s = s + "\n\t\t\t\t";
+					s = s +"  paramArray["+iParamSeq+"].Value=DateTime.Now;"+"\n\t\t\t\t";
+				}
+				//end
+				
+				else if(table.Columns[i].DataType == System.Data.DbType.Int32)
+				{
+					s = s + "\n\t\t\t\t";
+					s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";
+				}
+				else if(table.Columns[i].DataType == System.Data.DbType.Decimal)
+				{	
+					s = s + "\n\t\t\t\t";
+					s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";					
+				}
+				else if(table.Columns[i].DataType == System.Data.DbType.AnsiString)
+				{	
+					s = s + "\n\t\t\t\t";
+					s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";					
+				}
+				else if(table.Columns[i].DataType == System.Data.DbType.AnsiStringFixedLength)//Char类型
+				{	
+					s = s +"\n\t\t\t\t"+"if(!string.IsNullOrEmpty("+FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+"))"+"\n\t\t\t\t";
+					s = s+"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";
+					s=s+"else"+"\n\t\t\t\t";
+					s=s+"  paramArray["+iParamSeq+"].Value="+"DBNull.Value"+";"+"\n\t\t\t\t";					
+				}				
+			}
+			else
+			{
+				if(GetPropertyName(table.Columns[i]) != "CREATED_DATE")
+				{
+					s = s + "\n\t\t\t\t";
+					s = s +"  paramArray["+iParamSeq+"].Value="+ FormatParamClassName(SourceTable)+"Info."+GetFormatPropertyName(SourceTable.Columns[i])+";"+"\n\t\t\t\t";
+				}
+				else
+				{
+					s = s + "\n\t\t\t\t";
+					s = s +"  paramArray["+iParamSeq+"].Value=DateTime.Now;"+"\n\t\t\t\t";  
+				}
+			}
+		}
+		//string a = Convert.ToString(table.Columns[5].DataType);
+		return s;	
+	}
+	
+	public string GetFormatPropertyName(SchemaObjectBase schemaObject)
+	{
+		bool isHasChar = false;
+        string temp = "";
+		string str = GetPropertyName(schemaObject.Name);
+		
+        if (str.Contains("_"))
+        {
+
+            string s1 = str.Substring(0, str.LastIndexOf("_"));
+            string s2 = str.Substring(str.LastIndexOf("_"), str.Length - str.LastIndexOf("_"));
+
+            if (s2 == "_ID" || s2 == "_GID")
+            {
+                str = s1;
+                isHasChar = true;
+            }
+
+            str = str.ToLower();
+
+            char[] array = str.ToCharArray();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i == 0)
+                {
+                    array[0] = Convert.ToChar(array[0].ToString().ToUpper());
+                }
+
+                if (array[i].ToString() == "_")
+                {
+                    array[i + 1] = Convert.ToChar(array[i + 1].ToString().ToUpper());
+                }
+                temp += array[i].ToString();
+            }
+
+            if (s2 != "" && isHasChar == true)
+                temp += s2;
+            
+            temp = temp.Replace("_", "");
+        }
+        else
+		{         
+			//temp = str;
+			char[] tempArray = str.ToLower().ToCharArray();
+                for (int n = 0; n < tempArray.Length; n++)
+                {
+                    if (n == 0)
+                    {
+                        tempArray[n] = Convert.ToChar(tempArray[n].ToString().ToUpper());                        
+                    }
+                    temp += tempArray[n].ToString();
+                }
+		}
+		return temp;
+	}
+	
+</script>
