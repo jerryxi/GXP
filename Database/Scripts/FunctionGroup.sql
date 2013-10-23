@@ -1,5 +1,5 @@
 SELECT * FROM OperationLog
-
+  
 select * from dbo.FunctionGroup
 
 --DELETE FROM dbo.FunctionGroup
