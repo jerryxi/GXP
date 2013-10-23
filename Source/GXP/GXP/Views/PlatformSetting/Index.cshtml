@@ -62,14 +62,14 @@
                 queryParams: queryData,
                 columns: [[
                     { field: 'ck', checkbox: true },
-					{ field: 'SysSettingID', title: 'SysSettingID', width: 100, sortable: true }, 
-					{ field: 'Description', title: 'Description', width: 100, sortable: true }, 
-					{ field: 'Value', title: 'Value', width: 100, sortable: true }, 
-					{ field: 'DefaultValue', title: 'DefaultValue', width: 100, sortable: true }, 
-					{ field: 'CreatedBy', title: 'CreatedBy', width: 100, sortable: true }, 
-					{ field: 'CreatedDate', title: 'CreatedDate', width: 100, sortable: true }, 
-					{ field: 'UpdatedBy', title: 'UpdatedBy', width: 100, sortable: true }, 
-					{ field: 'UpdatedDate', title: 'UpdatedDate', width: 100, sortable: true } 					
+					{ field: 'SysSettingID', title: '系统设置ID', width: 100, sortable: true }, 
+					{ field: 'Description', title: '描述', width: 100, sortable: true }, 
+					{ field: 'Value', title: '值', width: 100, sortable: true }, 
+					{ field: 'DefaultValue', title: '默认值', width: 100, sortable: true }, 
+					{ field: 'CreatedBy', title: '创建人', width: 100, sortable: true }, 
+					{ field: 'CreatedDate', title: '创建日期', width: 100, sortable: true }, 
+					{ field: 'UpdatedBy', title: '更新人', width: 100, sortable: true }, 
+					{ field: 'UpdatedDate', title: '更新日期', width: 100, sortable: true } 					
                 ]],                
 
                 toolbar: [{
@@ -335,13 +335,13 @@
     <fieldset>
         <legend>查询</legend>
     <div>
-        <label for="Q_SysSettingID">SysSettingID：</label> 
+        <label for="Q_SysSettingID">系统设置ID：</label> 
         <input type="text" ID="Q_SysSettingID" name="Q_SysSettingID"  />&nbsp;&nbsp; 
-        <label for="Q_Description">Description：</label> 
+        <label for="Q_Description">描述：</label> 
         <input type="text" ID="Q_Description" name="Q_Description"  />&nbsp;&nbsp; 
-        <label for="Q_Value">Value：</label> 
+        <label for="Q_Value">值：</label> 
         <input type="text" ID="Q_Value" name="Q_Value"  />&nbsp;&nbsp; 
-        <label for="Q_DefaultValue">DefaultValue：</label> 
+        <label for="Q_DefaultValue">默认值：</label> 
         <input type="text" ID="Q_DefaultValue" name="Q_DefaultValue"  />&nbsp;&nbsp; 
         @*<label for="Q_CreatedBy" style="display:none">CreatedBy：</label> 
         <input type="text" ID="Q_CreatedBy" name="Q_CreatedBy"  style="display:none" />&nbsp;&nbsp; 

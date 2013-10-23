@@ -1,0 +1,5 @@
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.DataEntity\bin\Debug\GXP.DataEntity.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.DataEntity\bin\Debug\GXP.DataEntity.pdb
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.DataEntity\obj\Debug\GXP.DataEntity.csprojResolveAssemblyReference.cache
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.DataEntity\obj\Debug\GXP.DataEntity.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.DataEntity\obj\Debug\GXP.DataEntity.pdb

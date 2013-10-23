@@ -1,0 +1,14 @@
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\GXP.Common.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\GXP.Common.pdb
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\log4net.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.Unity.Interception.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\log4net.xml
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.pdb
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\bin\Debug\Microsoft.Practices.Unity.Interception.pdb
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\obj\Debug\GXP.Common.csprojResolveAssemblyReference.cache
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\obj\Debug\GXP.Common.dll
+C:\Users\jerryxi\Documents\GitHub\GXP\Source\GXP\GXP.Common\obj\Debug\GXP.Common.pdb
